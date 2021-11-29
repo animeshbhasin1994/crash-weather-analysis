@@ -1,7 +1,7 @@
 """
-Author : Animesh Bhasin
-Version : 1
-Version Date : 16th Nov 2022
+Author : Shivam Ojha
+Version : 1.1
+Version Date : 29th Nov 2022
 Description : This script is to scrape the weather data from
 https://www.wunderground.com/history/daily/us/ny/new-york-city/KJFK/date/2021-11-18
 and load into postgres db
@@ -16,6 +16,8 @@ from selenium import webdriver
 import time
 
 from selenium.webdriver.firefox.options import Options
+
+HISTORICAL_DATA_FLG = False
 
 def download_file(link):
     options = Options()
@@ -85,41 +87,100 @@ def scrape_file(soup):
 
     return df
 
+
+def generate_links(yesterday_date):
+    link_format = "https://www.wunderground.com/history/daily/us/ny/new-york-city/{}/date/{}-{}-{}"
+    days_in_month = {1: 31, 2: 28, 3: 31, 4: 30,
+                  5: 31, 6: 30, 7: 31, 8: 31,
+                  9: 30, 10: 31, 11: 30, 12: 31}
+    
+    days_in_month_leap = {1: 31, 2: 29, 3: 31, 4: 30,
+                  5: 31, 6: 30, 7: 31, 8: 31,
+                  9: 30, 10: 31, 11: 30, 12: 31}
+
+    links = []
+    for year in range(2021, 2022):
+        for month in range(1, 13):
+            if year % 4 == 0:
+                day_cnt = days_in_month_leap[month]
+            else:
+                day_cnt = days_in_month[month]
+            for day in range(1, day_cnt+1):
+                date_str = "{}-{}-{}".format(year, month, day)
+                date_object = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+                if date_object > yesterday_date:
+                    break
+                links.append(link_format.format('KJFK', year, month, day))
+    return links
+
+
+def generate_incremental_links(date_obj):
+    link_format = "https://www.wunderground.com/history/daily/us/ny/new-york-city/{}/date/{}}"
+
+    today = date.today()
+    today_str = today.strftime("%Y-%m-%d")
+    today_obj = datetime.datetime.strptime(today_str, "%Y-%m-%d")
+
+    links = []
+    date_str = datetime.datetime.strptime(date_obj, "%Y-%m-%d")
+    links.append(link_format.format('KJFK', date_str))
+    while date_obj < today_obj:
+        date_obj = date_obj + datetime.timedelta(days=1)
+        date_str = datetime.datetime.strptime(date_obj, "%Y-%m-%d")
+        links.append(link_format.format('KJFK', date_str))
+
+    return links
+
+
+
+def get_date_max_date_in_db(engine, schema_name, table_name):
+    #sql_statement = '''select max(Date + interval '1' day) from {}.{};'''.format(schema_name, table_name)
+    sql_statement = '''select max(Date) from {}.{};'''.format(schema_name, table_name)
+
+    with engine.connect() as connection:
+        result = connection.execute(sql_statement)
+        for row in result:
+            max_date = row[0]
+
+    return max_date
+
+
 def main():
+    # Database credentials
     database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
     schema_name = 'weather'
-    weather_table_name = 'hourly'
+    weather_table_name = 'hourly_weather_data'
     engine = create_engine(database_url, echo=False)
 
     yesterday = date.today() - datetime.timedelta(days=1)
     yes_date_str = yesterday.strftime("%Y-%m-%d")
+    yesterday_obj = datetime.datetime.strptime(yes_date_str, "%Y-%m-%d")
+    
+    #for station in ('KJFK'):
+    if HISTORICAL_DATA_FLG: 
+        #load data from 2015 to now
+        links = generate_links(yesterday_obj)
+    else:
+        #load incremental data, compared to last date in db
+        max_date = get_date_max_date_in_db(engine, schema_name, weather_table_name)
+        links = generate_incremental_links(max_date)
 
-    link_format = "https://www.wunderground.com/history/daily/us/ny/new-york-city/{}/date/{}-{}-{}"
-    for station in ('KJFK','KLGA'):
+    for i, link in enumerate(links):
+        soup = download_file(link)
+        df = scrape_file(soup)
+        df['Date'] = link.split('/')[-1]
+        df['station'] = 'KJFK'
 
-    # links = [link_format.format(station, year, month, day)
-    #          for year in range(2021, 2022)
-    #          for month in range(1, 2)
-    #          for day in range(1, 3)]
-        year = yes_date_str.split('-')[0]
-        month = yes_date_str.split('-')[1]
-        day = yes_date_str.split('-')[-1]
-        links = [link_format.format(station, year, month, day)]
-        for i, link in enumerate(links):
-            soup = download_file(link)
-            df = scrape_file(soup)
-            df['Date'] = yes_date_str
-            df['station'] = station
+        write_to_db(df, table_name= weather_table_name,schema_name = schema_name,engine= engine,date_list_str= yes_date_str,
+                    station = 'KJFK')
 
-            write_to_db(df, table_name= weather_table_name,schema_name = schema_name,engine= engine,date_list_str= yes_date_str,
-                        station = station)
 
 def write_to_db(df, table_name, schema_name, engine, date_list_str, station):
-    sql_statement = '''delete from {}.{} where "Date" in ('{}') and station = '{}';'''.format(schema_name, table_name,
-                                                                          date_list_str, station)
-    engine.execute(sql_statement)
+    #sql_statement = '''delete from {}.{} where "Date" in ('{}') and station = '{}';'''.format(schema_name, table_name,
+    #                                                                      date_list_str, station)
+    #engine.execute(sql_statement)
     df.to_sql(name=table_name, schema=schema_name, con=engine, if_exists='append', index=False)
+
+
 if __name__ == '__main__':
     main()
-
-
