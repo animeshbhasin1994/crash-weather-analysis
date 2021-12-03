@@ -8,13 +8,14 @@ Description : This script is to preprocess the crashes data
 import requests
 import get_crashes
 import pandas as pd
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from sqlalchemy import create_engine
 import geopy
-
+import json
+import googlemaps
 
 def main():
-
+    print ("Script started at " + str(datetime.now()))
     database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
     schema_name = 'crash'
     crashes_table_name = 'crashes_clean'
@@ -30,47 +31,52 @@ def main():
     end_date = date_list[-1]
 
     sql_statement = '''select * from crash.crashes where date(crash_date) between '{}' and '{}';'''.format(start_date,
-                                                                                                           end_date)
+                                                                                                          end_date)
+
     df = pd.read_sql_query(sql_statement, database_url)
 
-    geolocator = geopy.Nominatim(user_agent='hello')
+    gmaps = googlemaps.Client(key='AIzaSyCe3u-TDSAFjSJztX5AlaMXKrGjmuI2l5s')
     if not df.empty:
         '''Fill missing zipcode'''
-        mask = (df['zip_code'].isna()) & (df['location_latitude'] != 0)
+        mask = (df['zip_code'].isna()) & (df['location_latitude'] != 0) & (df['location_latitude'].notna())
+
         if mask.any():
             df.loc[mask, 'zip_code'] = df.loc[mask].apply \
-                (get_zipcode, axis=1, geolocator=geolocator, lat_field='location_latitude', lon_field='location_longitude')
+                (get_zipcode, axis=1, gmaps = gmaps, lat_field='location_latitude', lon_field='location_longitude')
 
         '''Fill missing lat long'''
         mask = ((df['location_latitude'].isna()) | (df['location_latitude'] == '0')) & (df['zip_code'].notna())
         if mask.any():
-            df.loc[mask, ['location_latitude', 'location_longitude']] = df.loc[mask].apply(get_lat_long, axis=1).tolist()
+            df.loc[mask, ['location_latitude', 'location_longitude']] = df.loc[mask].apply(get_lat_long, axis=1, gmaps = gmaps).tolist()
 
         '''Write data to clean table'''
         write_to_db(engine, df, collision_id_list_str=get_collision_id_list(df), schema_name='crash',
                     table_name='crashes_clean')
+    print ("Script ended at " + str(datetime.now()))
 
+def get_zipcode(df, gmaps, lat_field, lon_field):
+    reverse_geocode_result = gmaps.reverse_geocode((df[lat_field], df[lon_field]))
 
-def get_zipcode(df, geolocator, lat_field, lon_field):
-    location = geolocator.reverse((df[lat_field], df[lon_field]))
-    if location and 'postcode' in location.raw['address']:
-        zip_code = location.raw['address']['postcode']
-        if '-' in zip_code:
-            return zip_code.split('-')[0]
-        elif ':' in zip_code:
-            return zip_code.split(':')[0]
-        else:
-            return zip_code
+    s1 = json.dumps(reverse_geocode_result)
+    address_response = json.loads(s1)
 
-
-def get_lat_long(row):
-    geolocator = geopy.Nominatim(user_agent='geoapiExercises')
+    if address_response:
+        get_zipcode = address_response[0]['address_components'][-1]['long_name']
+        return get_zipcode
+    return None
+def get_lat_long(row, gmaps):
     zipcode = row['zip_code']
-    location = geolocator.geocode(zipcode)
-    if location and 'lat' in location.raw and 'lon' in location.raw:
-        return [location.raw['lat'], location.raw['lon']]
-    return ['-1', '-1']
+    geocode_result = gmaps.geocode(zipcode)
 
+    get_lat, get_long = 0.0, 0.0
+    if geocode_result:
+        for i in geocode_result[0]['geometry']['bounds']:
+            get_lat = geocode_result[0]['geometry']['bounds'][i]['lat']
+            get_long = geocode_result[0]['geometry']['bounds'][i]['lng']
+
+            break
+
+    return get_lat, get_long
 
 def get_collision_id_list(df):
     collision_id_list = df['collision_id'].tolist()
