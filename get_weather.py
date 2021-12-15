@@ -1,49 +1,70 @@
 """
 Author : Shivam Ojha
-Version : 3
+Version : 3.1
 Version Date : 15th Dec 2021
 Description : This script is to scrape the weather data from
 https://www.wunderground.com/history/daily/us/ny/new-york-city/KJFK/
 and load into postgres db
 """
-import requests
-import pandas as pd
+import re
 import datetime
 from datetime import date
+import requests
+import pandas as pd
 from sqlalchemy import create_engine
 from bs4 import BeautifulSoup
 
 HISTORICAL_DATA_FLG = False
 
-def format_data(date):
-    date = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
-    # The API key is kept static for now
-    url = f'https://api.weather.com/v1/location/KJFK:9:US/observations/historical.json?apiKey=e1f10a1e78da46f5b10a1e78da96f525&units=e&startDate={date}&endDate={date}'
+def format_data(given_date, api_key):
+    """Get relevant data from the wunderground request call
+
+    Args:
+        given_date (str): Date string
+        api_key (str): API key from website
+
+    Returns:
+        transposed_object: Dictionary of lists with weather values every hour
+    """
+    given_date = datetime.datetime.strptime(given_date, '%Y-%m-%d').strftime('%Y%m%d')
+    # api_key = 'e1f10a1e78da46f5b10a1e78da96f525'
+    url = f'https://api.weather.com/v1/location/KJFK:9:US/observations/historical.json?apiKey={api_key}&units=e&startDate={date}&endDate={date}'
     response = requests.get(url).json()
-    mappings = { 'Hour': 'hour', "Date": 'date', 'Temp': 'temp', 'Dew': 'dewPt', 'humidity': 'rh', 'Wind Cardinal': 'wdir_cardinal', 'Wind Speed': 'wspd', 'Wind Gust': 'gust', 'Pressure List': 'pressure', 'Precip Rate': 'precip_hrly', 'Condition': 'wx_phrase'}
+    mappings = {'Hour': 'hour', "Date": 'date', 'Temp': 'temp',
+                'Dew': 'dewPt', 'humidity': 'rh', 'Wind Cardinal': 'wdir_cardinal',
+                'Wind Speed': 'wspd', 'Wind Gust': 'gust', 'Pressure List': 'pressure',
+                'Precip Rate': 'precip_hrly', 'Condition': 'wx_phrase'}
     formatted_object = []
     try:
-        for tuple in response['observations']:
-            timestamp = tuple['valid_time_gmt']
-            date = datetime.datetime.fromtimestamp(timestamp)
-            tuple['date'] = date.strftime("%d %b %Y")
-            tuple['hour'] = date.strftime("%I:%M %p")
+        for tuple1 in response['observations']:
+            timestamp = tuple1['valid_time_gmt']
+            given_date = datetime.datetime.fromtimestamp(timestamp)
+            tuple1['date'] = given_date.strftime("%d %b %Y")
+            tuple1['hour'] = given_date.strftime("%I:%M %p")
             formatted_tuple = {}
-            for el in mappings.keys():
-                formatted_tuple[el] = tuple[mappings[el]] if tuple[mappings[el]] else 0
+            for element in mappings.keys():
+                formatted_tuple[element] = tuple1[mappings[element]] if tuple1[mappings[element]] else 0
             formatted_object.append(formatted_tuple)
         transposed_object = {}
 
-        for el in mappings.keys():
-            temp_list = list()
+        for element in mappings.keys():
+            temp_list = []
             for tuple in formatted_object:
-                temp_list.append(tuple[el])
-            transposed_object[el] = temp_list
+                temp_list.append(tuple[element])
+            transposed_object[element] = temp_list
         return transposed_object
     except KeyError:
         return None
 
 def generate_dates(yesterday_date):
+    """Generate dates for historical load
+
+    Args:
+        yesterday_date (date object): date yesterday
+
+    Returns:
+        dates_list: List of dates to fetch the weather data
+    """
     days_in_month = {1: 31, 2: 28, 3: 31, 4: 30,
                   5: 31, 6: 30, 7: 31, 8: 31,
                   9: 30, 10: 31, 11: 30, 12: 31}
@@ -66,7 +87,35 @@ def generate_dates(yesterday_date):
     return dates_list
 
 
-def generate_incremental_links(given_date):
+def get_api_key(link):
+    """Get the API key from wunderground
+
+    Args:
+        link (str): website link
+
+    Returns:
+        api_key: API key
+    """
+    # api_key = 'e1f10a1e78da46f5b10a1e78da96f525'
+    response = requests.get(link)
+    html_doc = response.text
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    scrp = soup.find_all('script', id="app-root-state")
+    str1 = 'SUN_API_KEY&q;:&q;'
+    res1 = re.findall(str1+'(.*)', str(scrp))
+    api_key = res1[0].split('&q;')[0]
+    return api_key
+
+
+def generate_incremental_dates(given_date):
+    """Generate dates for incremental load of weather data
+
+    Args:
+        given_date (str): maximum date from database
+
+    Returns:
+        [type]: [description]
+    """
     today = date.today()
     today_str = today.strftime("%Y-%m-%d")
     today_obj = datetime.datetime.strptime(today_str, "%Y-%m-%d")
@@ -81,7 +130,19 @@ def generate_incremental_links(given_date):
 
 
 def get_date_max_date_in_db(engine, schema_name, table_name):
-    sql_statement = '''select max({}."Date") from {}.{};'''.format(table_name, schema_name, table_name)
+    """Get maximum date value from the database
+
+    Args:
+        engine : postgres engine to connect to db
+        schema_name (str): schema name
+        table_name (str): table name
+
+    Returns:
+        max_date: Maximum date in the database
+    """
+    sql_statement = '''select max({}."Date") from {}.{};'''.format(table_name,
+                                                                    schema_name,
+                                                                    table_name)
     with engine.connect() as connection:
         result = connection.execute(sql_statement)
         for row in result:
@@ -89,7 +150,33 @@ def get_date_max_date_in_db(engine, schema_name, table_name):
     return max_date
 
 
+def write_to_db(df_, table_name, schema_name, engine, date_list_str):
+    """Function to insert dataframe values to database
+
+    Args:
+        df_ (dataframe object): Dataframe with weather data
+        table_name (str): table name
+        schema_name (str): schema name
+        engine : postgres engine to connect to db
+        date_list_str (str): date string
+    """
+    # Remove duplicates, if any
+    sql_statement = '''delete from {}.{} where {}."Date" in ('{}')'''.format(schema_name,
+                                                                            table_name,
+                                                                            table_name,
+                                                                            date_list_str)
+    engine.execute(sql_statement)
+    df_.to_sql(name=table_name, schema=schema_name, con=engine,
+                if_exists='append', index=False, method='multi')
+
+
 def main():
+    """Main function
+    """
+    # Get the api key from wunderground
+    link = 'https://www.wunderground.com'
+    api_key = get_api_key(link)
+
     # Database credentials
     database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
     schema_name = 'weather'
@@ -99,31 +186,26 @@ def main():
     yesterday = date.today() - datetime.timedelta(days=1)
     yes_date_str = yesterday.strftime("%Y-%m-%d")
     yesterday_obj = datetime.datetime.strptime(yes_date_str, "%Y-%m-%d")
-    
+
     #for station in ('KJFK'):
-    if HISTORICAL_DATA_FLG: 
+    if HISTORICAL_DATA_FLG:
         #load data from 2014 to now
         dates = generate_dates(yesterday_obj)
     else:
         #load incremental data, compared to last date in db
         max_date = get_date_max_date_in_db(engine, schema_name, weather_table_name)
-        dates = generate_incremental_links(str(max_date))
-    for d1 in dates:
-        df = pd.DataFrame(format_data(d1))
-        if isinstance(df, pd.core.frame.DataFrame):
-            df['Date'] = d1
-            df['station'] = 'KJFK'
-            print("Storing values for date: {}".format(d1))
+        dates = generate_incremental_dates(str(max_date))
+    for date1 in dates:
+        df_ = pd.DataFrame(format_data(date1, api_key))
+        if isinstance(df_, pd.core.frame.DataFrame):
+            df_['Date'] = date1
+            df_['station'] = 'KJFK'
+            print("Storing values for date: {}".format(date1))
 
-            write_to_db(df, table_name= weather_table_name,schema_name = schema_name,engine= engine,date_list_str= d1)
-
-
-def write_to_db(df, table_name, schema_name, engine, date_list_str):
-    # Remove duplicates, if any
-    sql_statement = '''delete from {}.{} where {}."Date" in ('{}')'''.format(schema_name, table_name, table_name,
-                                                                         date_list_str)
-    engine.execute(sql_statement)
-    df.to_sql(name=table_name, schema=schema_name, con=engine, if_exists='append', index=False, method='multi')
+            write_to_db(df_, table_name= weather_table_name,
+                        schema_name = schema_name,
+                        engine= engine,
+                        date_list_str= date1)
 
 
 if __name__ == '__main__':
