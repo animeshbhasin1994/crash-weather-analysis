@@ -114,7 +114,7 @@ def generate_incremental_dates(given_date):
         given_date (str): maximum date from database
 
     Returns:
-        [type]: [description]
+        dates: list of dates
     """
     today = date.today()
     today_str = today.strftime("%Y-%m-%d")
