@@ -28,7 +28,7 @@ def format_data(given_date, api_key):
     """
     given_date = datetime.datetime.strptime(given_date, '%Y-%m-%d').strftime('%Y%m%d')
     # api_key = 'e1f10a1e78da46f5b10a1e78da96f525'
-    url = f'https://api.weather.com/v1/location/KJFK:9:US/observations/historical.json?apiKey={api_key}&units=e&startDate={date}&endDate={date}'
+    url = f'https://api.weather.com/v1/location/KJFK:9:US/observations/historical.json?apiKey={api_key}&units=e&startDate={given_date}&endDate={given_date}'
     response = requests.get(url).json()
     mappings = {'Hour': 'hour', "Date": 'date', 'Temp': 'temp',
                 'Dew': 'dewPt', 'humidity': 'rh', 'Wind Cardinal': 'wdir_cardinal',
