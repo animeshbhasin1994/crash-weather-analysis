@@ -1,7 +1,7 @@
 """
 Author : Shivam Ojha
-Version : 2
-Version Date : 29th Nov 2022
+Version : 2.1
+Version Date : 15th Dec 2021
 Description : This script is to scrape the weather data from
 https://www.wunderground.com/history/daily/us/ny/new-york-city/KJFK/date/2021-11-18
 and load into postgres db
@@ -16,14 +16,14 @@ from selenium import webdriver
 import time
 import logging
 
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 
-HISTORICAL_DATA_FLG = False
+HISTORICAL_DATA_FLG = True
 
 def download_file(link):
     options = Options()
     options.headless = True
-    driver = webdriver.Firefox(options=options)
+    driver = webdriver.Chrome(options=options)
     # driver = webdriver.Firefox(firefox_binary='/usr/bin/firefox-esr')
     driver.get(link)
     time.sleep(3)
@@ -101,7 +101,7 @@ def generate_links(yesterday_date):
                   9: 30, 10: 31, 11: 30, 12: 31}
 
     links = []
-    for year in range(2021, 2022):
+    for year in range(2014, 2021):
         for month in range(1, 13):
             if year % 4 == 0:
                 day_cnt = days_in_month_leap[month]
@@ -184,7 +184,7 @@ def write_to_db(df, table_name, schema_name, engine, date_list_str, station):
     sql_statement = '''delete from {}.{} where {}."Date" in ('{}')'''.format(schema_name, table_name, table_name,
                                                                           date_list_str)
     engine.execute(sql_statement)
-    df.to_sql(name=table_name, schema=schema_name, con=engine, if_exists='append', index=False)
+    df.to_sql(name=table_name, schema=schema_name, con=engine, if_exists='append', index=False, method='multi')
 
 
 if __name__ == '__main__':
