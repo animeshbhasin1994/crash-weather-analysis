@@ -3,7 +3,7 @@ Author : Shivam Ojha
 Version : 3
 Version Date : 15th Dec 2021
 Description : This script is to scrape the weather data from
-https://www.wunderground.com/history/daily/us/ny/new-york-city/KJFK/date/2021-11-18
+https://www.wunderground.com/history/daily/us/ny/new-york-city/KJFK/
 and load into postgres db
 """
 import requests
@@ -13,7 +13,7 @@ from datetime import date
 from sqlalchemy import create_engine
 from bs4 import BeautifulSoup
 
-HISTORICAL_DATA_FLG = True
+HISTORICAL_DATA_FLG = False
 
 def format_data(date):
     date = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
@@ -22,24 +22,26 @@ def format_data(date):
     response = requests.get(url).json()
     mappings = { 'Hour': 'hour', "Date": 'date', 'Temp': 'temp', 'Dew': 'dewPt', 'humidity': 'rh', 'Wind Cardinal': 'wdir_cardinal', 'Wind Speed': 'wspd', 'Wind Gust': 'gust', 'Pressure List': 'pressure', 'Precip Rate': 'precip_hrly', 'Condition': 'wx_phrase'}
     formatted_object = []
-    for tuple in response['observations']:
-        timestamp = tuple['valid_time_gmt']
-        date = datetime.datetime.fromtimestamp(timestamp)
-        tuple['date'] = date.strftime("%d %b %Y")
-        tuple['hour'] = date.strftime("%I:%M %p")
-        formatted_tuple = {}
+    try:
+        for tuple in response['observations']:
+            timestamp = tuple['valid_time_gmt']
+            date = datetime.datetime.fromtimestamp(timestamp)
+            tuple['date'] = date.strftime("%d %b %Y")
+            tuple['hour'] = date.strftime("%I:%M %p")
+            formatted_tuple = {}
+            for el in mappings.keys():
+                formatted_tuple[el] = tuple[mappings[el]] if tuple[mappings[el]] else 0
+            formatted_object.append(formatted_tuple)
+        transposed_object = {}
+
         for el in mappings.keys():
-            formatted_tuple[el] = tuple[mappings[el]] if tuple[mappings[el]] else 0
-        formatted_object.append(formatted_tuple)
-    transposed_object = {}
-
-    for el in mappings.keys():
-        temp_list = list()
-        for tuple in formatted_object:
-            temp_list.append(tuple[el])
-        transposed_object[el] = temp_list
-
-    return transposed_object
+            temp_list = list()
+            for tuple in formatted_object:
+                temp_list.append(tuple[el])
+            transposed_object[el] = temp_list
+        return transposed_object
+    except KeyError:
+        return None
 
 def generate_dates(yesterday_date):
     days_in_month = {1: 31, 2: 28, 3: 31, 4: 30,
@@ -100,7 +102,7 @@ def main():
     
     #for station in ('KJFK'):
     if HISTORICAL_DATA_FLG: 
-        #load data from 2015 to now
+        #load data from 2014 to now
         dates = generate_dates(yesterday_obj)
     else:
         #load incremental data, compared to last date in db
