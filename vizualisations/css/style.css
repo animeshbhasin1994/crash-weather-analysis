@@ -10,6 +10,20 @@ h3{
   width: 100%;
   height: 400px;
 }
+#am_charts{
+  height: 100%;
+  width: 100%;
+}
+#am_running_bar_chart{
+  width: 100%;
+  height: 400px;
+}
+
+#am_heatmap{
+  width: 100%;
+  height: 400px;
+}
+
 #hmap {
   height: 100%;
   width: 100%;
