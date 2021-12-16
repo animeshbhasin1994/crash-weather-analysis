@@ -38,11 +38,15 @@ def main():
     # Sort dataframes based on datetime values
     crash_df.sort_values('crash_datetime', inplace=True)
     weather_df.sort_values('Datetime', inplace=True)
-    
+
+    # Remove duplicate data columns
+    del weather_df['Date']
+    del weather_df['Hour']    
+
     # Appending tables
     merged_dataframe = pd.merge_asof(crash_df, weather_df, left_on="crash_datetime", 
                                  right_on="Datetime", direction='nearest')
-    
+
     # Update merged table in db
     merged_dataframe.to_sql(name='merged_data_table', schema='merged_data', con=engine,
            if_exists='replace', index=False, method='multi')

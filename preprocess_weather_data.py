@@ -10,20 +10,13 @@ from datetime import datetime
 import pandas as pd
 from sqlalchemy import create_engine
 
-def main():
+def preprocess_weather_data(weather_df):
     """
-    Script to preprocess the scraped weather data
+    Pre process weather dataset
+
+    Args:
+        weather_df (dataframe): Dataframe with weather data
     """
-    print ("Script started at " + str(datetime.now()))
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
-    schema_name = 'weather'
-    engine = create_engine(database_url, echo=False)
-    weather_table = 'weather_data'
-    weather_table_processed = 'weather_data_processed'
-
-    sql_statement = '''select * from {}.{}'''.format(schema_name, weather_table)
-    weather_df = pd.read_sql_query(sql_statement, database_url)
-
     # make sure we have time objects
     weather_df['Date1'] = pd.to_datetime(weather_df['Date'])
     weather_df['Hour'] = pd.to_datetime(weather_df['Hour']).dt.strftime('%H:%M')
@@ -36,6 +29,27 @@ def main():
     weather_df['Date'].dropna(inplace=True)
     weather_df['Temp'].dropna(inplace=True)
     weather_df['Condition'].dropna(inplace=True)
+
+    return weather_df
+
+
+def main():
+    """
+    Script to preprocess the scraped weather data
+    """
+    print ("Script started at " + str(datetime.now()))
+
+    # Initialise database parameters
+    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    schema_name = 'weather'
+    engine = create_engine(database_url, echo=False)
+    weather_table = 'weather_data'
+    weather_table_processed = 'weather_data_processed'
+
+    sql_statement = '''select * from {}.{}'''.format(schema_name, weather_table)
+    weather_df = pd.read_sql_query(sql_statement, database_url)
+
+    weather_df = preprocess_weather_data(weather_df)
 
     #Update preprocessed table
     weather_df.to_sql(name=weather_table_processed, schema=schema_name, con=engine,
