@@ -60,16 +60,15 @@ with DAG(
     )
 
     t5 = BashOperator(
-        task_id='Temperature prediction',
-        bash_command='echo "Function to be added"',
-        #bash_command= 'python3 /home/so2639/crash-weather-analysis/predict_weather.py',
+        task_id='Merge datasets',
+        bash_command= 'python3 /home/so2639/crash-weather-analysis/merge_datasets.py',
         dag=dag
     )
 
     t6 = BashOperator(
-        task_id='Merge datasets',
+        task_id='Temperature prediction',
         bash_command='echo "Function to be added"',
-        #bash_command= 'python3 /home/so2639/crash-weather-analysis/merge_datasets.py',
+        #bash_command= 'python3 /home/so2639/crash-weather-analysis/predict_weather.py',
         dag=dag
     )
 

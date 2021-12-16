@@ -71,7 +71,10 @@ def main():
     # Appending tables
     merged_dataframe = pd.merge_asof(crash_df, weather_df, left_on="crash_datetime", 
                                  right_on="Datetime", direction='nearest')
-
+    
+    #Remove duplicate datetime column
+    del merged_dataframe['Datetime']
+    
     # Update merged table in db
     merged_dataframe.to_sql(name='merged_data_table', schema='merged_data', con=engine,
            if_exists='append', index=False, method='multi')
