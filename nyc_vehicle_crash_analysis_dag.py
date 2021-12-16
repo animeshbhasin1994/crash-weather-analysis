@@ -37,52 +37,52 @@ with DAG(
 
     t1 = BashOperator(
         task_id='fetch_crash_data',
-        bash_command='python3 /home/so2639/crash-weather-analysis/get_crashes.py',
+        bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/get_crashes.py',
         dag=dag,
     )
 
     t2 = BashOperator(
         task_id='webscrape_weather_data',
-        bash_command='python3 /home/so2639/crash-weather-analysis/get_weather.py',
+        bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/get_weather.py',
         dag=dag
     )
 
     t3 = BashOperator(
         task_id='preprocess_crash_data',
-        bash_command='python3 /home/so2639/crash-weather-analysis/preprocess_crash_data.py',
+        bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/preprocess_crash_data.py',
         dag=dag
     )
 
     t4 = BashOperator(
         task_id='preprocess_weather_data',
-        bash_command='python3 /home/so2639/crash-weather-analysis/preprocess_weather_data.py',
+        bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/preprocess_weather_data.py',
         dag=dag
     )
 
     t5 = BashOperator(
         task_id='merge_datasets',
-        bash_command= 'python3 /home/so2639/crash-weather-analysis/merge_datasets.py',
+        bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysis/merge_datasets.py',
         dag=dag
     )
 
     t6 = BashOperator(
         task_id='temperature_prediction',
         bash_command='echo "Function to be added"',
-        #bash_command= 'python3 /home/so2639/crash-weather-analysis/predict_weather.py',
+        #bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysispredict_weather.py',
         dag=dag
     )
 
     t7 = BashOperator(
         task_id='crash_analysis_and_prediction',
         bash_command='echo "Function to be added"',
-        #bash_command='python3 /home/so2639/crash-weather-analysis/predict_crash.py',
+        #bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/predict_crash.py',
         dag=dag
     )
 
     t8 = BashOperator(
         task_id='Visualization',
         bash_command='echo "Function to be added"',
-        #bash_command= 'python3 /home/so2639/crash-weather-analysis/visualisation.py',
+        #bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysis/visualisation.py',
         dag=dag
     )
 
