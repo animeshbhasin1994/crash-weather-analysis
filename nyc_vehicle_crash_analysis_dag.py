@@ -24,7 +24,7 @@ default_args = {
 }
 
 with DAG(
-    'NYC Vehicle Crash Analysis and Prediction',
+    'NYC_Vehicle_Crash_Analysis_and_Prediction',
     default_args=default_args,
     description='DAG for Big Data Analytics Final Project',
     schedule_interval=timedelta(days=1),
@@ -60,20 +60,20 @@ with DAG(
     )
 
     t5 = BashOperator(
-        task_id='Merge datasets',
+        task_id='merge_datasets',
         bash_command= 'python3 /home/so2639/crash-weather-analysis/merge_datasets.py',
         dag=dag
     )
 
     t6 = BashOperator(
-        task_id='Temperature prediction',
+        task_id='temperature_prediction',
         bash_command='echo "Function to be added"',
         #bash_command= 'python3 /home/so2639/crash-weather-analysis/predict_weather.py',
         dag=dag
     )
 
     t7 = BashOperator(
-        task_id='Crash analysis and prediction',
+        task_id='crash_analysis_and_prediction',
         bash_command='echo "Function to be added"',
         #bash_command='python3 /home/so2639/crash-weather-analysis/predict_crash.py',
         dag=dag
