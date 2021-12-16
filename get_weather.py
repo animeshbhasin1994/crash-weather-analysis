@@ -72,7 +72,7 @@ def generate_dates(yesterday_date):
                   5: 31, 6: 30, 7: 31, 8: 31,
                   9: 30, 10: 31, 11: 30, 12: 31}
     dates_list = []
-    for year in range(2014, 2022):
+    for year in range(2012, 2022):
         for month in range(1, 13):
             if year % 4 == 0:
                 day_cnt = days_in_month_leap[month]
@@ -187,9 +187,8 @@ def main():
     yes_date_str = yesterday.strftime("%Y-%m-%d")
     yesterday_obj = datetime.datetime.strptime(yes_date_str, "%Y-%m-%d")
 
-    #for station in ('KJFK'):
     if HISTORICAL_DATA_FLG:
-        #load data from 2014 to now
+        #load data from 2012 to now
         dates = generate_dates(yesterday_obj)
     else:
         #load incremental data, compared to last date in db

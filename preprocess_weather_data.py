@@ -25,7 +25,10 @@ def main():
     weather_df = pd.read_sql_query(sql_statement, database_url)
 
     # make sure we have time objects
-    weather_df['Hour'] = pd.to_datetime(weather_df['Hour']).dt.time
+    weather_df['Date1'] = pd.to_datetime(weather_df['Date'])
+    weather_df['Hour'] = pd.to_datetime(weather_df['Hour']).dt.strftime('%H:%M')
+    weather_df['Datetime'] = pd.to_datetime(weather_df['Date1'].apply(str)+' '+weather_df['Hour'])
+    del weather_df['Date1']
 
     # Drop values if NA
     print ("Dropping null values")
