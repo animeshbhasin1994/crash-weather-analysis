@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Visualizations</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <script type="text/javascript" src="json/heatmap.json"></script>
+  </head>
+
+  <body onload="load()">
+
+  <h3>Crash Analysis</h3>
+  <div class="tab">
+  <button class="tablinks" onclick="clickHandle(event, 'chartdiv')">AM Maps</button>
+  <button class="tablinks" onclick="clickHandle(event, 'hmap')">Heatmaps</button>
+  <button class="tablinks" onclick="clickHandle(event, 'metabase')">Metabase</button>
+  </div>
+
+    <div id="chartdiv" class="tabcontent" style ="display:block">
+      <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    <script src="js/script.js"></script>
+
+    </div>
+
+    <div id ='hmap' class = 'tabcontent' >
+      <div id="floating-panel" >
+        <button id="toggle-heatmap">Toggle Heatmap</button>
+        <button id="change-gradient">Change gradient</button>
+        <button id="change-radius">Change radius</button>
+        <button id="change-opacity">Change opacity</button>
+      </div>
+      <div id ='map_container'>
+        <div class="map_box">
+          <div id="map_brooklyn" class = 'maps'>
+          </div>
+          <p>Brooklyn</p>
+        </div>
+        <div class="map_box">
+          <div id="map_bronx" class = 'maps'>
+          </div>
+          <p>Bronx</p>
+        </div>
+        <div class="map_box">
+          <div id="map" class = 'maps' >
+          </div>
+          <p>Manhattan</p>
+        </div>
+        <div class="map_box">
+          <div id="map_queens" class = 'maps'>
+          </div>
+          <p>Queens</p>
+        </div>
+        <div class="map_box">
+          <div id="map_staten" class = 'maps'>
+          </div>
+          <p>Staten Island</p>
+        </div>
+
+      </div>
+    </div>
+          <script src="js/heatmap.js"></script>
+      <script async defer
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzyqHsPHlvu_0bu2HEDQCv0DtUwvWokmE&libraries=visualization&libraries=visualization&callback=initMap">
+      </script>
+
+
+
+    <div id="metabase" class="tabcontent" style ="display:none">
+      <iframe
+        src="http://146.148.47.47:3000/public/dashboard/7fc0c36b-ecc0-416d-a69f-5ba3c4027145"
+        frameborder="0"
+        width=100%
+        height="600"
+        allowtransparency
+    ></iframe></div>
+
+
+  <script>
+function clickHandle(evt, animalName) {
+  let i, tabcontent, tablinks;
+
+  // This is to clear the previous clicked content.
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Set the tab to be "active".
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Display the clicked tab and set it to active.
+  document.getElementById(animalName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+
+
+  </body>
+</html>
+
