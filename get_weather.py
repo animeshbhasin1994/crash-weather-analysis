@@ -150,7 +150,7 @@ def get_date_max_date_in_db(engine, schema_name, table_name):
     return max_date
 
 
-def write_to_db(df_, table_name, schema_name, engine):
+def write_to_db(df_, table_name, schema_name, engine, date_str):
     """Function to insert dataframe values to database
 
     Args:
@@ -158,10 +158,13 @@ def write_to_db(df_, table_name, schema_name, engine):
         table_name (str): table name
         schema_name (str): schema name
         engine : postgres engine to connect to db
+        date_str (str): date string
     """
+    sql_statement = '''delete from {}.{} where {}."Date" in ('{}')'''.format(schema_name, 
+                    table_name, table_name, date_str)
+    engine.execute(sql_statement)
     df_.to_sql(name=table_name, schema=schema_name, con=engine,
-                if_exists='replace', index=False, method='multi')
-
+                if_exists='append', index=False, method='multi')
 
 def main():
     """Main function
@@ -196,7 +199,7 @@ def main():
 
             write_to_db(df_, table_name= weather_table_name,
                         schema_name = schema_name,
-                        engine= engine)
+                        engine= engine, date_str=date1)
 
 
 if __name__ == '__main__':

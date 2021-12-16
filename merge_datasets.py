@@ -5,9 +5,11 @@ Version Date : 15th Dec 2021
 Description : This script merges the two datasets, so that
 analysis can be performed
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from sqlalchemy import create_engine
+
+HISTORICAL_DATA_FLG = False
 
 def main():
     """
@@ -21,19 +23,42 @@ def main():
     weather_schema_name = 'weather'
     weather_table_processed = 'weather_data_processed'
 
-    sql_statement = '''select * from {}.{}'''.format(weather_schema_name, weather_table_processed)
-    weather_df = pd.read_sql_query(sql_statement, database_url)
-    weather_df['Datetime'] = pd.to_datetime(weather_df['Datetime'])
-
     # Crash Data
     crash_schema_name = 'crash'
     crash_table_processed = 'crashes_clean'
-    sql_statement = '''select * from {}.{}'''.format(crash_schema_name, crash_table_processed)
-    crash_df = pd.read_sql_query(sql_statement, database_url)
+
+    # Create Dataframes
+    if HISTORICAL_DATA_FLG:
+        sql_statement = '''select * from {}.{}'''.format(weather_schema_name, weather_table_processed)
+        weather_df = pd.read_sql_query(sql_statement, database_url)
+        weather_df['Datetime'] = pd.to_datetime(weather_df['Datetime'])
+
+        sql_statement = '''select * from {}.{}'''.format(crash_schema_name, crash_table_processed)
+        crash_df = pd.read_sql_query(sql_statement, database_url)
+    else:
+        ten_days_ago = datetime.combine(datetime.today() - timedelta(10),
+                                  datetime.min.time())
+        ten_days_ago_str = datetime.strftime(ten_days_ago, "%Y-%m-%d")
+        sql_statement = '''select * from {}.{} where "Date" > '{}' '''.format(weather_schema_name, 
+                                                                  weather_table_processed, ten_days_ago_str)
+
+        weather_df = pd.read_sql_query(sql_statement, database_url)
+
+        sql_statement = '''select * from {}.{} where "crash_date" > '{}' '''.format(crash_schema_name, 
+                                                                        crash_table_processed, ten_days_ago_str)
+        crash_df = pd.read_sql_query(sql_statement, database_url)
+        
+        # Delete last 10 days values, as they will be refreshed
+        sql_statement = '''delete from {}.{} where "crash_date" > '{}' '''.format('merged_data', 
+                                                                        'merged_data_table', ten_days_ago_str)
+        engine.execute(sql_statement)
+
     #Creating crash_datetime column
     crash_df['crash_date'] = pd.to_datetime(crash_df['crash_date'])
     crash_df['crash_datetime'] = pd.to_datetime(crash_df['crash_date'].apply(str)+' '+crash_df['crash_time'])
     crash_df['crash_datetime'] = pd.to_datetime(crash_df['crash_datetime'])
+
+    weather_df['Datetime'] = pd.to_datetime(weather_df['Datetime'])
 
     # Sort dataframes based on datetime values
     crash_df.sort_values('crash_datetime', inplace=True)
@@ -49,7 +74,7 @@ def main():
 
     # Update merged table in db
     merged_dataframe.to_sql(name='merged_data_table', schema='merged_data', con=engine,
-           if_exists='replace', index=False, method='multi')
+           if_exists='append', index=False, method='multi')
 
     print ("Script completed at " + str(datetime.now()))
 

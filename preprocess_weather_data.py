@@ -23,6 +23,9 @@ def preprocess_weather_data(weather_df):
     weather_df['Datetime'] = pd.to_datetime(weather_df['Date1'].apply(str)+' '+weather_df['Hour'])
     del weather_df['Date1']
 
+    # Delete duplicate values
+    weather_df.drop_duplicates(inplace=True)
+
     # Drop values if NA
     print ("Dropping null values")
     weather_df['Hour'].dropna(inplace=True)
