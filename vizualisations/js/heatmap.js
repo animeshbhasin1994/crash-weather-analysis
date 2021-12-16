@@ -10,7 +10,7 @@ function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     zoom: 10.5,
     center: { lat: 40.754932, lng: 	-73.984016 },
-    mapTypeId: "satellite",
+    mapTypeId: "hybrid",
   });
   heatmap = new google.maps.visualization.HeatmapLayer({
     data: getPoints(),
@@ -19,7 +19,7 @@ function initMap() {
     map_brooklyn = new google.maps.Map(document.getElementById("map_brooklyn"), {
     zoom: 11,
     center: { lat: 40.650002, lng: 	-73.949997 },
-    mapTypeId: "roadmap",
+    mapTypeId: "hybrid",
   });
   heatmap_brooklyn = new google.maps.visualization.HeatmapLayer({
     data: getPoints_brooklyn(),
@@ -37,7 +37,7 @@ function initMap() {
   map_queens = new google.maps.Map(document.getElementById("map_queens"), {
     zoom: 11,
     center: { lat: 40.742054, lng: 	-73.769417},
-    mapTypeId: "roadmap",
+    mapTypeId: "hybrid",
   });
   heatmap_queens = new google.maps.visualization.HeatmapLayer({
     data: getPoints_queens(),

@@ -11,17 +11,29 @@
 
   <h3>Crash Analysis</h3>
   <div class="tab">
-  <button class="tablinks" onclick="clickHandle(event, 'chartdiv')">AM Maps</button>
+  <button class="tablinks" onclick="clickHandle(event, 'am_charts')">AM Maps</button>
   <button class="tablinks" onclick="clickHandle(event, 'hmap')">Heatmaps</button>
-  <button class="tablinks" onclick="clickHandle(event, 'metabase')">Metabase</button>
+<!--  <button class="tablinks" onclick="clickHandle(event, 'metabase')">Metabase</button>-->
   </div>
 
-    <div id="chartdiv" class="tabcontent" style ="display:block">
+  <div id="am_charts" class = 'tabcontent'  style ="display:block">
+    <div id="chartdiv">
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <script src="js/am_heatmap.js"></script>
+    </div>
+    <div id = 'am_heatmap'>
       <script src="https://www.amcharts.com/lib/4/core.js"></script>
     <script src="https://www.amcharts.com/lib/4/charts.js"></script>
     <script src="js/script.js"></script>
 
     </div>
+    <div id = 'am_running_bar_chart'>
+    <script src="js/am_bar_chart_race.js"></script>
+
+    </div>
+  </div>
 
     <div id ='hmap' class = 'tabcontent' >
       <div id="floating-panel" >
@@ -66,14 +78,14 @@
 
 
 
-    <div id="metabase" class="tabcontent" style ="display:none">
-      <iframe
-        src="http://146.148.47.47:3000/public/dashboard/7fc0c36b-ecc0-416d-a69f-5ba3c4027145"
-        frameborder="0"
-        width=100%
-        height="600"
-        allowtransparency
-    ></iframe></div>
+<!--    <div id="metabase" class="tabcontent" style ="display:none">-->
+<!--      <iframe-->
+<!--        src="http://146.148.47.47:3000/public/dashboard/7fc0c36b-ecc0-416d-a69f-5ba3c4027145"-->
+<!--        frameborder="0"-->
+<!--        width=100%-->
+<!--        height="600"-->
+<!--        allowtransparency-->
+<!--    ></iframe></div>-->
 
 
   <script>
