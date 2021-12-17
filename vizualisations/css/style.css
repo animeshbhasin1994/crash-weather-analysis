@@ -82,13 +82,17 @@ h4{
   width: 100%;
   height: 600px;
 }
+#am_bar_1 {
+  width: 100%;
+  height: 400px;
+}
 #am_heatmap{
   width: 100%;
   height: 400px;
 }
 #am_donut {
   width: 100% !important;
-  height: 400px !important;
+  height: 450px !important;
   display: block !important;
 
 }
@@ -212,6 +216,6 @@ html, body {
 .tabcontent {
   display: none;
   padding: 6px 12px;
-  border: 1px solid #ccc;
+  /*border: 1px solid #ccc;*/
   border-top: none;
 }
