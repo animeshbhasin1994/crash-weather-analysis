@@ -2,28 +2,96 @@
   font-family: Helvetica;
 }
 
+div#banner{
+  position: relative;
+  margin-top: 0;
+  height: 200px;
+  text-align: center;
+
+  margin: 0;
+  background: url("https://images.unsplash.com/photo-1603722343783-4beeffae8c35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2171&q=80");
+
+  background-repeat: no-repeat;
+  /*background-size: cover !important;*/
+  /*background-attachment: fixed !important;*/
+  background-position: right 5% bottom 0%;
+}
 h3{
-  padding-left: 20px;
+  /*height: 200px;*/
+  font-size: 2em;
+
+  text-shadow: black 0px 0px 2px, black 2px 2px 4px;
+  color: white;
+  font-weight: 900;
+  margin: 0;
+  position: absolute;
+  /*width: 100%;*/
+  /*height: 100%;*/
+  top: 50%;
+  left: 5%;
+  /*background-color: rgba(0,0,0,0.5);*/
+  /*background:*/
+  transform: translate(0,-50%);
+  /*padding-left: 20px;*/
 }
 
-#chartdiv {
+h4{
+  text-align: center;
+}
+
+.graph-wrapper{
+  /*height: 800px;*/
+  /*background: blue;*/
+  /*width: 80%;*/
+  margin: 20px auto;
+  padding: 10px 10%;
+  /*box-sizing: border-box;*/
+  /*border-radius: 10px;*/
+  /*border: 1px solid black;*/
+}
+
+.graph-wrapper:nth-of-type(odd){
+  background: #eeeeee;
+}
+
+.graph-wrapper p{
+  color: #666
+}
+.graph-wrapper h4{
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 0;
+}
+#chartdiv{
   width: 100%;
   height: 400px;
+  /*background: green;*/
 }
 #am_charts{
   height: 100%;
   width: 100%;
+  margin: 0;
+  padding: 0;
 }
 #am_running_bar_chart{
   width: 100%;
   height: 400px;
+  /*background: red;*/
 }
-
+#am_clustered{
+  width: 100%;
+  height: 600px;
+}
 #am_heatmap{
   width: 100%;
   height: 400px;
 }
+#am_donut {
+  width: 100% !important;
+  height: 400px !important;
+  display: block !important;
 
+}
 #hmap {
   height: 100%;
   width: 100%;
@@ -90,7 +158,7 @@ html, body {
   /*left: 25%;*/
   padding: 5px;
   right: 7%;
-  position: absolute;
+  position: fixed;
   top: 10px;
   z-index: 5;
 }

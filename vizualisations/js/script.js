@@ -2,6 +2,11 @@
 // Create chart instance
 var chart = am4core.create("chartdiv", am4charts.PieChart);
 
+// var title = chart.titles.create();
+// title.text = "Distibution of Crashes over Boroughs";
+// title.fontSize = 25;
+// title.marginBottom = 10
+
 // Create pie series
 var series = chart.series.push(new am4charts.PieSeries());
 series.dataFields.value = "crashes";

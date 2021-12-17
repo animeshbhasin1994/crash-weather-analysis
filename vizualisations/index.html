@@ -8,8 +8,9 @@
   </head>
 
   <body onload="load()">
-
-  <h3>Crash Analysis</h3>
+  <div id="banner">
+    <h3>New York City Crash Analysis</h3>
+  </div>
   <div class="tab">
   <button class="tablinks" onclick="clickHandle(event, 'am_charts')">AM Maps</button>
   <button class="tablinks" onclick="clickHandle(event, 'hmap')">Heatmaps</button>
@@ -17,22 +18,80 @@
   </div>
 
   <div id="am_charts" class = 'tabcontent'  style ="display:block">
-    <div id="chartdiv">
-    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
-<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
-<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
-    <script src="js/am_heatmap.js"></script>
-    </div>
-    <div id = 'am_heatmap'>
-      <script src="https://www.amcharts.com/lib/4/core.js"></script>
-    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
-    <script src="js/script.js"></script>
+    <h4><strong>Analysis of crashes in New York City from July 2012 </strong></h4>
+    <div id="chart-wrapper">
+      <div class="graph-wrapper">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur harum ipsa maiores ratione repellendus.
+          Dolorum fugiat illo laboriosam non nulla officia possimus quasi quibusdam ratione ullam! Nisi odio quod ut.</p>
+        <h4>Running Bar Chart showing distribution of crashes across boroughs over time</h4>
+        <div id="am_running_bar_chart">
+          <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+          <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+          <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+          <script src="js/am_bar_chart_race.js"></script>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos quam suscipit tenetur! Culpa dolore enim est
+          excepturi fugiat fugit illum labore laboriosam nemo, pariatur ratione repellat rerum saepe soluta sunt.
+        </p>
+      </div>
+       <div class="graph-wrapper">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur harum ipsa maiores ratione repellendus.
+          Dolorum fugiat illo laboriosam non nulla officia possimus quasi quibusdam ratione ullam! Nisi odio quod ut.</p>
+        <h4>Heat map showing distribution of crashes over day of week and hour of day</h4>
+        <div id = 'am_heatmap'>
+          <script src="https://www.amcharts.com/lib/4/core.js"></script>
+          <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+          <script src="js/am_heatmap.js"></script>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos quam suscipit tenetur! Culpa dolore enim est
+          excepturi fugiat fugit illum labore laboriosam nemo, pariatur ratione repellat rerum saepe soluta sunt.
+        </p>
+      </div>
+      <div class="graph-wrapper">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur harum ipsa maiores ratione repellendus.
+          Dolorum fugiat illo laboriosam non nulla officia possimus quasi quibusdam ratione ullam! Nisi odio quod ut.</p>
+        <h4>Donut Pie Chart showing distribution of crashes across type of vehicle</h4>
+         <div id = 'am_donut'>
+            <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+          <script src="js/am_donut_pie.js"></script>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos quam suscipit tenetur! Culpa dolore enim est
+          excepturi fugiat fugit illum labore laboriosam nemo, pariatur ratione repellat rerum saepe soluta sunt.
+        </p>
+      </div>
+      <div class="graph-wrapper">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur harum ipsa maiores ratione repellendus.
+          Dolorum fugiat illo laboriosam non nulla officia possimus quasi quibusdam ratione ullam! Nisi odio quod ut.</p>
+        <h4>Clustered Column Graph showing distribution of crashes over the deaths & injuries</h4>
+         <div id = 'am_clustered'>
+          <script src="js/am_stacked_column_chart.js"></script>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos quam suscipit tenetur! Culpa dolore enim est
+          excepturi fugiat fugit illum labore laboriosam nemo, pariatur ratione repellat rerum saepe soluta sunt.
+        </p>
+      </div>
+
+       <div class="graph-wrapper">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur harum ipsa maiores ratione repellendus.
+          Dolorum fugiat illo laboriosam non nulla officia possimus quasi quibusdam ratione ullam! Nisi odio quod ut.</p>
+        <h4>Distribution of Crashes over Boroughs</h4>
+         <div id = 'chartdiv'>
+          <script src="js/script.js"></script>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos quam suscipit tenetur! Culpa dolore enim est
+          excepturi fugiat fugit illum labore laboriosam nemo, pariatur ratione repellat rerum saepe soluta sunt.
+        </p>
+      </div>
+
+
 
     </div>
-    <div id = 'am_running_bar_chart'>
-    <script src="js/am_bar_chart_race.js"></script>
 
-    </div>
   </div>
 
     <div id ='hmap' class = 'tabcontent' >
