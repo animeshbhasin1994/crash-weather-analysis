@@ -1,1 +1,34 @@
 # crash-weather-analysis
+
+./
+├── README.md
+├── analysis_and_predictions
+│   ├── analyze_crash.py
+│   ├── merge_datasets.py
+│   └── predict_weather.py
+├── get_crashes.py
+├── get_weather.py
+├── load_full_crashes_data.py
+├── nyc_vehicle_crash_analysis_dag.py
+├── preprocess_crash_data.py
+├── preprocess_weather_data.py
+├── utils
+│   └── gmaps_api.py
+└── visualizations
+    ├── css
+    │   └── style.css
+    ├── index.html
+    ├── js
+    │   ├── am_bar_1.js
+    │   ├── am_bar_chart_race.js
+    │   ├── am_donut_pie.js
+    │   ├── am_heatmap.js
+    │   ├── am_stacked_column_chart.js
+    │   ├── heatmap.js
+    │   └── script.js
+    └── json
+        ├── config.json
+        ├── data.json
+        └── heatmap.json
+
+6 directories, 23 files

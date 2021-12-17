@@ -9,13 +9,10 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 #from airflow.operators.python_operator import PythonOperator
 
-#seven_days_ago = datetime.combine(datetime.today() - timedelta(3),
-#                                  datetime.min.time())
 
 default_args = {
     'owner': 'Shivam',
     'depends_on_past': False,
-    #'start_date': seven_days_ago,
     'email': ['airflow@airflow.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -32,8 +29,6 @@ with DAG(
     catchup=False,
     tags=['Project']
 ) as dag:
-
-    # t* examples of tasks created by instantiating operators
 
     t1 = BashOperator(
         task_id='fetch_crash_data',
@@ -61,28 +56,26 @@ with DAG(
 
     t5 = BashOperator(
         task_id='merge_datasets',
-        bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysis/merge_datasets.py',
+        bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysis/analysis_and_predictions/merge_datasets.py',
         dag=dag
     )
 
     t6 = BashOperator(
         task_id='temperature_prediction',
-        bash_command='echo "Function to be added"',
-        #bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysispredict_weather.py',
+        bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysis/analysis_and_predictions/predict_weather.py',
         dag=dag
     )
 
     t7 = BashOperator(
         task_id='crash_analysis_and_prediction',
-        bash_command='echo "Function to be added"',
-        #bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/predict_crash.py',
+        bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/analysis_and_predictions/analyze_crash.py',
         dag=dag
     )
 
     t8 = BashOperator(
         task_id='Visualization',
-        bash_command='echo "Function to be added"',
-        #bash_command= 'python3 /home/so2639/airflow/dags/crash-weather-analysis/visualisation.py',
+        #bash_command='echo "Function to be added"',
+        bash_command= 'google-chrome /home/so2639/airflow/dags/crash-weather-analysis/visualisations/index.html',
         dag=dag
     )
 
