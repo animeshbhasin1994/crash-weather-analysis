@@ -26,7 +26,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
 
-TRAIN_MODEL = False
+TRAIN_MODEL = True
 
 
 def get_df_from_db(database_url, sql_statement):
@@ -200,12 +200,6 @@ def main():
         y_pred_svm = clf_svm.predict(X_test)
         svm_acc = accuracy_score(y_test, y_pred_svm)
         print("SVM Accuracy: ", svm_acc)
-        # confusion matrix
-        # matrix = confusion_matrix(y_test, y_pred_svm, labels=[0,1,2,3])
-        # print('Confusion matrix : \n',matrix)
-        # classification report for precision, recall f1-score and accuracy
-        # matrix = classification_report(y_test, y_pred_svm, labels=[0,1,2,3])
-        # print('Classification report : \n',matrix)
 
 if __name__ == '__main__':
     main()
