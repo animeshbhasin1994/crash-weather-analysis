@@ -1,5 +1,6 @@
 # crash-weather-analysis
 
+This repository has the code components for the project for EECS 6892 Big Data Analytics
 ./
 ├── README.md
 ├── analysis_and_predictions
