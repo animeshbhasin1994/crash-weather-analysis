@@ -25,8 +25,9 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
-
-TRAIN_MODEL = True
+# Set this to True if you want to train the models again as part of the airflow pipeline
+# SVM takes considerable time to train
+TRAIN_MODEL = False
 
 
 def get_df_from_db(database_url, sql_statement):
