@@ -3,6 +3,9 @@ Author : Shivam Ojha
 Version : 1
 Version Date : 27th Nov 2021
 Description : Airflow orchestration DAG
+
+Task 8 runs the html file for visualisation, so the default
+browser for xdg-open should be set for the ubuntu machine
 """
 from datetime import datetime, timedelta
 from airflow import DAG
@@ -68,14 +71,14 @@ with DAG(
 
     t7 = BashOperator(
         task_id='crash_analysis_and_prediction',
-        bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/analysis_and_predictions/analyze_crash.py',
+        bash_command='sleep 1043',
+        #bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/analysis_and_predictions/analyze_crash.py',
         dag=dag
     )
 
     t8 = BashOperator(
         task_id='Visualization',
-        #bash_command='echo "Function to be added"',
-        bash_command= 'google-chrome /home/so2639/airflow/dags/crash-weather-analysis/visualisations/index.html',
+        bash_command= 'xdg-open /home/so2639/airflow/dags/crash-weather-analysis/visualisations/index.html',
         dag=dag
     )
 
