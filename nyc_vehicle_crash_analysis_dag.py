@@ -71,8 +71,7 @@ with DAG(
 
     t7 = BashOperator(
         task_id='crash_analysis_and_prediction',
-        bash_command='sleep 1043',
-        #bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/analysis_and_predictions/analyze_crash.py',
+        bash_command='python3 /home/so2639/airflow/dags/crash-weather-analysis/analysis_and_predictions/analyze_crash.py',
         dag=dag
     )
 
