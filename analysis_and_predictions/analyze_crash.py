@@ -154,6 +154,7 @@ def main():
        'number_of_persons_injured', 'number_of_persons_killed', 'Temp',
        'Condition', 'Precip Rate', 'Dew', 'Wind Speed', 'day_time',
        'crash_month', 'crash_day', 'hazard_level']
+    print("Correlation Matrix computed.")
     calculate_corr_matrix(corr_df, corr_col)
 
     final_df['crash_date'] = pd.to_datetime(final_df['crash_date'])

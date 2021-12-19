@@ -93,7 +93,7 @@ def create_X_Y(timeseries, lag, n_ahead, target_index=0):
     # Creating placeholder lists
     X, Y = [], []
     if len(timeseries) - lag <= 0:
-        X.append(ts)
+        X.append(timeseries)
     else:
         for i in range(len(timeseries) - lag - n_ahead):
             Y.append(timeseries[(i + lag):(i + lag + n_ahead), target_index])
@@ -148,7 +148,7 @@ def main():
     lr = 0.001 # Learning rate
     n_layer = 10 # Number of neurons in LSTM layer
 
-    # The features used in the modeling
+    # Features used in the modeling
     features_final = ['Temp', 'day_cos', 'day_sin', 'month_sin', 'month_cos']
 
     # Subseting only the needed columns 
@@ -159,16 +159,16 @@ def main():
     train = ts[0:int(nrows * (1 - test_div))]
     test = ts[int(nrows * (1 - test_div)):]
 
-    # Scaling the data 
+    # Scaling data 
     train_mean = train.mean()
     train_std = train.std()
     train = (train - train_mean) / train_std
     test = (test - train_mean) / train_std
 
-    # Creating the final scaled frame 
+    # final scaled dataframe 
     ts_s = pd.concat([train, test])
 
-    # Creating the X and Y for training
+    # X and Y for training
     X, Y = create_X_Y(ts_s.values, lag=lag, n_ahead=n_ahead)
     n_ft = X.shape[2]
 
@@ -181,19 +181,18 @@ def main():
     #Shape of validation data: (9747, 48, 5)
     #Shape of the validation target data: (9747, 1)
 
-
-    # Initiating the model object
+    # Model
     model = neuralnet_model(X=Xtrain, Y=Ytrain, n_outputs=n_ahead, n_lag=lag,
                             n_ft=n_ft, n_layer=n_layer, batch=batch_size, epochs=epochs,
                             lr=lr, Xval=Xval, Yval=Yval,)
-    # Training of the model 
+    # Train the model 
     history = model.train()
 
-    # Comparing the forecasts with the actual values
+    # Compare the forecasts with the actual values
     yhat = [x[0] for x in model.predict(Xval)]
     y = [y[0] for y in Yval]
 
-    # Creating the frame to store both predictions
+    # dataframe to store both predictions
     days = weather_df["Datetime"].values[-len(y):]
     frame = pd.concat([
     pd.DataFrame({'day': days, 'Temp': y, 'type': 'original'}),
@@ -203,7 +202,6 @@ def main():
     # Creating the unscaled values column
     frame['temp_absolute'] = [(x * train_std['Temp']) + train_mean['Temp'] for x in frame['Temp']]
 
-    # Pivoting
     pivoted = frame.pivot_table(index='day', columns='type')
     pivoted.columns = ['_'.join(x).strip() for x in pivoted.columns.values]
     pivoted['res'] = pivoted['temp_absolute_original'] - pivoted['temp_absolute_forecast']
