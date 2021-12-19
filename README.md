@@ -1,11 +1,15 @@
-# crash-weather-analysis
+# NYC Vehicle Crash Analysis
 
 ### This repository has the code components for the project for EECS 6892 Big Data Analytics in Fall 2021
 
 Team Members: Shivam Ojha(so2639), Abhishek Arora(aa4822), Animesh Bhasin(ab5051)
 
 
-# Organization of this directory
+## System Architecture
+
+![Alt text](system_arch.png "System architecture")
+
+## Organization of this directory
 
 ```
 ./
