@@ -24,8 +24,8 @@ with DAG(
     'NYC_Vehicle_Crash_Analysis_and_Prediction',
     default_args=default_args,
     description='DAG for Big Data Analytics Final Project',
-    schedule_interval=timedelta(days=1),
-    start_date=datetime(2021, 11, 10, 7, 00, 00),
+    start_date = datetime(2021, 11, 20, 7, 0, 0),
+    schedule_interval = '* 7 * * *',
     catchup=False,
     tags=['Project']
 ) as dag:
