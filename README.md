@@ -15,6 +15,7 @@ Team Members: Shivam Ojha(so2639), Abhishek Arora(aa4822), Animesh Bhasin(ab5051
 ./
 ├── README.md
 ├── analysis_and_predictions
+│   ├── README.md
 │   ├── analyze_crash.py
 │   ├── merge_datasets.py
 │   └── predict_weather.py
@@ -25,6 +26,7 @@ Team Members: Shivam Ojha(so2639), Abhishek Arora(aa4822), Animesh Bhasin(ab5051
 ├── preprocess_crash_data.py
 ├── preprocess_weather_data.py
 ├── requirements.txt
+├── system_arch.png
 ├── utils
 │   └── gmaps_api.py
 └── visualizations
@@ -44,5 +46,4 @@ Team Members: Shivam Ojha(so2639), Abhishek Arora(aa4822), Animesh Bhasin(ab5051
         ├── data.json
         └── heatmap.json
 
-6 directories, 24 files
-```
+6 directories, 26 files
