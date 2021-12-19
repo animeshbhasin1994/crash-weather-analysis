@@ -2,7 +2,7 @@
 Author : Shivam Ojha
 Version : 1
 Version Date : 10th Dec 2021
-Description : Python function to predict weather values
+Description : Python function to predict weather values using RNN
 """
 import numpy as np
 import matplotlib.pyplot as plt

@@ -3,7 +3,7 @@ Author : Shivam Ojha
 Version : 1
 Version Date : 10th Dec 2021
 Description : Python function to predict crash severity and 
-analyze crash data
+analyze crash data. Set TRAIN_MODEL flag to True to train models.
 """
 from datetime import datetime
 import numpy as np
