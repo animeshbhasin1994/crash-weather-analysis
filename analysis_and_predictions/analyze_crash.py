@@ -149,6 +149,17 @@ def main():
     final_df['day_time'] = final_df['crash_time'].apply(transform_time)
     final_df = final_df.dropna(axis=0, subset=['zip_code', 'location_latitude', 'location_longitude'])
 
+    final_df['crash_date'] = pd.to_datetime(final_df['crash_date'])
+    final_df['crash_month'] = final_df['crash_date'].dt.month
+    final_df['crash_day'] = final_df['crash_date'].dt.day
+
+    final_df['helper1'] =   final_df['number_of_persons_killed']*3 + final_df['number_of_persons_injured']*1
+
+    final_df['hazard_level'] = final_df['helper1'].apply(severity_calculate)
+    del final_df['crash_time']
+    del final_df['crash_date']
+    del final_df['helper1']
+
     # Create corr_df, used for correlation matrix
     corr_df = final_df
     corr_col = ['zip_code', 'location_latitude', 'location_longitude',
@@ -158,27 +169,19 @@ def main():
     print("Correlation Matrix computed.")
     calculate_corr_matrix(corr_df, corr_col)
 
-    final_df['crash_date'] = pd.to_datetime(final_df['crash_date'])
-    final_df['crash_month'] = final_df['crash_date'].dt.month
-    final_df['crash_day'] = final_df['crash_date'].dt.day
-    final_df['helper1'] =   final_df['number_of_persons_killed']*3 + final_df['number_of_persons_injured']*1
-
-    final_df['hazard_level'] = final_df['helper1'].apply(severity_calculate)
-    del final_df['crash_time']
-    del final_df['crash_date']
-    del final_df['helper1']
-
-    le_ = LabelEncoder()
-    encoded_df = final_df[final_df.columns[:]].apply(le_.fit_transform)
-
-    # Prepare training and test sets
-    X = np.array(encoded_df[['zip_code', 'day_time', 'Temp', 'Condition', 'Dew', 'Wind Speed', 'Precip Rate',
-                        'number_of_persons_injured', 'number_of_persons_killed']])
-    y = np.array(encoded_df['hazard_level'])
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
-
     if TRAIN_MODEL:
+
+        le_ = LabelEncoder()
+        encoded_df = final_df[final_df.columns[:]].apply(le_.fit_transform)
+
+        # Prepare training and test sets
+        X = np.array(encoded_df[['zip_code', 'day_time', 'Temp', 'Condition', 'Dew', 'Wind Speed', 'Precip Rate',
+                            'number_of_persons_injured', 'number_of_persons_killed']])
+        y = np.array(encoded_df['hazard_level'])
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+
+
         # Logistic Regression
         clf_lr = LogisticRegression(random_state=0, max_iter=45).fit(X_train, y_train)
 
