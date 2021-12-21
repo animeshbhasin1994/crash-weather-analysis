@@ -9,6 +9,7 @@ and load into postgres db
 from datetime import datetime
 import pandas as pd
 from sqlalchemy import create_engine
+import os
 
 def preprocess_weather_data(weather_df):
     """
@@ -43,7 +44,7 @@ def main():
     print ("Script started at " + str(datetime.now()))
 
     # Initialise database parameters
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    database_url = os.getenv('database_url')
     schema_name = 'weather'
     engine = create_engine(database_url, echo=False)
     weather_table = 'weather_data'

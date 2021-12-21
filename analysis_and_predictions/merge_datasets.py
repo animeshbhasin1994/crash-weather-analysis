@@ -8,6 +8,7 @@ analysis can be performed
 from datetime import datetime, timedelta
 import pandas as pd
 from sqlalchemy import create_engine
+import os
 
 HISTORICAL_DATA_FLG = False
 
@@ -16,7 +17,7 @@ def main():
     Script to merge the scraped weather data and crash datasets
     """
     print ("Script started at " + str(datetime.now()))
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    database_url = os.getenv('database_url')
     engine = create_engine(database_url, echo=False)
     
     # Weather data

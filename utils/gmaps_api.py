@@ -7,8 +7,9 @@
 import json
 import googlemaps
 from datetime import datetime
+import os
 
-gmaps = googlemaps.Client(key='AIzaSyCe3u-TDSAFjSJztX5AlaMXKrGjmuI2l5s')
+gmaps = googlemaps.Client(key=os.getenv('gmaps_key'))
 
 
 def get_zipcode(df, gmaps, lat_field, lon_field):

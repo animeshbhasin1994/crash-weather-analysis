@@ -9,7 +9,7 @@ import requests
 import pandas as pd
 from datetime import date, timedelta
 from sqlalchemy import create_engine
-
+import os
 
 def main():
     crashes_url = 'https://data.cityofnewyork.us/resource/h9gi-nx95.json'
@@ -22,7 +22,7 @@ def main():
                    'contributing_factor_vehicle_5', 'collision_id', 'vehicle_type_code1', 'vehicle_type_code2',
                    'vehicle_type_code_3', 'vehicle_type_code_4', 'vehicle_type_code_5']
 
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    database_url = os.getenv('database_url')
     schema_name = 'crash'
     crashes_table_name = 'crashes'
     engine = create_engine(database_url, echo=False)

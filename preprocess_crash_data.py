@@ -13,11 +13,11 @@ from sqlalchemy import create_engine
 import json
 import googlemaps
 from utils.gmaps_api import get_zipcode, get_lat_long
-
+import os
 
 def main():
     print ("Script started at " + str(datetime.now()))
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    database_url = os.getenv('database_url')
     schema_name = 'crash'
     crashes_table_name = 'crashes_clean'
     engine = create_engine(database_url, echo=False)
@@ -25,9 +25,6 @@ def main():
     crash_start_date = get_crashes.get_date_max_date_in_db(engine, schema_name, crashes_table_name)
 
     date_list = get_crashes.get_list_of_dates_to_process(crash_start_date)
-    # start_date = end_date = '2021-12-22'
-    # start_date = '2021-11-09'
-    # end_date = '2021-11-15'
     start_date = date_list[0]
     end_date = date_list[-1]
 
@@ -36,7 +33,7 @@ def main():
 
     df = pd.read_sql_query(sql_statement, database_url)
 
-    gmaps = googlemaps.Client(key='AIzaSyCe3u-TDSAFjSJztX5AlaMXKrGjmuI2l5s')
+    gmaps = googlemaps.Client(key=os.getenv('gmaps_key'))
     if not df.empty:
         '''Fill missing zipcode'''
         mask = (df['zip_code'].isna()) & (df['location_latitude'] != 0) & (df['location_latitude'].notna())

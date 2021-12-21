@@ -9,6 +9,7 @@ from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.pipeline import make_pipeline
@@ -140,7 +141,7 @@ def main():
     """
     Main function
     """
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    database_url = os.getenv('database_url')
     sql_statement = '''select * from {}.{}'''.format('merged_data', 'merged_data_table')
     final_df = get_df_from_db(database_url, sql_statement)
     final_df.reset_index(inplace=True)

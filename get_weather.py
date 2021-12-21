@@ -13,6 +13,7 @@ import requests
 import pandas as pd
 from sqlalchemy import create_engine
 from bs4 import BeautifulSoup
+import os
 
 HISTORICAL_DATA_FLG = False
 
@@ -27,7 +28,6 @@ def format_data(given_date, api_key):
         transposed_object: Dictionary of lists with weather values every hour
     """
     given_date = datetime.datetime.strptime(given_date, '%Y-%m-%d').strftime('%Y%m%d')
-    # api_key = 'e1f10a1e78da46f5b10a1e78da96f525'
     url = f'https://api.weather.com/v1/location/KJFK:9:US/observations/historical.json?apiKey={api_key}&units=e&startDate={given_date}&endDate={given_date}'
     response = requests.get(url).json()
     mappings = {'Hour': 'hour', "Date": 'date', 'Temp': 'temp',
@@ -96,7 +96,6 @@ def get_api_key(link):
     Returns:
         api_key: API key
     """
-    # api_key = 'e1f10a1e78da46f5b10a1e78da96f525'
     response = requests.get(link)
     html_doc = response.text
     soup = BeautifulSoup(html_doc, 'html.parser')
@@ -174,7 +173,7 @@ def main():
     api_key = get_api_key(link)
 
     # Database credentials
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    database_url = os.getenv('database_url')
     schema_name = 'weather'
     weather_table_name = 'weather_data'
     engine = create_engine(database_url, echo=False)

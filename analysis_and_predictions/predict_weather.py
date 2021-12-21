@@ -14,6 +14,7 @@ from tensorflow.keras.losses import SparseCategoricalCrossentropy, BinaryCrossen
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import models
 from tensorflow.keras.callbacks import EarlyStopping
+import os
 
 class neuralnet_model():
     def __init__(self, X, Y, n_outputs, n_lag, n_ft, n_layer, batch, epochs, lr,
@@ -108,7 +109,7 @@ def main():
     """
     Main function
     """
-    database_url = 'postgresql+psycopg2://postgres:postgres@34.69.230.53/bda'
+    database_url = os.getenv('database_url')
     weather_schema_name = 'weather'
     weather_table_processed = 'weather_data_processed'
     sql_statement = '''select * from {}.{}'''.format(weather_schema_name, weather_table_processed)
