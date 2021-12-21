@@ -36,7 +36,7 @@ def get_df_from_db(database_url, sql_statement):
     Function to get dataframe from a table
 
     Args:
-        database_url ([type]): [description]
+        database_url ([string]): [Database URL]
 
     Returns:
         df_ (dataframe): dataframe returned from the sql query
