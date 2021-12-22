@@ -4,6 +4,12 @@
 
 Team Members: Shivam Ojha(so2639), Abhishek Arora(aa4822), Animesh Bhasin(ab5051)
 
+## Overview of the project
+The project NYC Motor Vehicle Crash Analyses aims to understand correlations, patterns and analyze trends with the current weather conditions in the area of the crash. Further extending the scope, aim is to draw a relation with varying weather conditions, if the severity of the accident varies with it.
+To develop this system end to end, first an ETL pipeline is setup to continuously ingest data from the NYC vehicle crash dataset and webscrape weather data with a daily update. The dataset contains about 2 million records. The next step involves cleaning the dataset and  backfilling missing values of zipcode, latitude, longitude etc. so that we have comprehensive data about each incident. We also scraped weather data from wunderground for each weather station in New York and store it in another table. This data is then processed and mapped with the crash dataset.
+
+The workflow pipeline is orchestrated using an Airflow DAG, that runs on a daily schedule. After the dataset is completely ready, it is used for visualisation and prediction analysis. Machine learning models like logistic regression, support vector machines and Gradient Boosting Classifier are evaluated to predict the severity of a vehicle crash. Also, a recurrent neural network is trained to predict the weather conditions as well. The analysis and interactive visualisations on metabase and amcharts can help to understand the crash factors, high risk areas and a warning system that can warn users based on the historic data.
+
 
 ## System Architecture
 
