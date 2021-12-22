@@ -10,7 +10,13 @@ To develop this system end to end, first an ETL pipeline is setup to continuousl
 
 The workflow pipeline is orchestrated using an Airflow DAG, that runs on a daily schedule. After the dataset is completely ready, it is used for visualisation and prediction analysis. Machine learning models like logistic regression, support vector machines and Gradient Boosting Classifier are evaluated to predict the severity of a vehicle crash. Also, a recurrent neural network is trained to predict the weather conditions as well. The analysis and interactive visualisations on metabase and amcharts can help to understand the crash factors, high risk areas and a warning system that can warn users based on the historic data.
 
+This repository contains the code files used to perform various tasks in the pipeline. The data analysis & predictions part is kept in the analysis_and_predictions directory and the visualizations code is kept in the visualizations directory.
 
+## Dataset
+In this project, we have used:
+- [Motor vehicle crash dataset](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) from NYC Open data.
+- Weather data from [wundergound](https://www.wunderground.com).
+We first performed a historical load of both of these datasets starting from 2012. When the pipeline executes daily, the incremental load for both of these datasets takes place.
 ## System Architecture
 
 ![Alt text](system_arch.png "System architecture")
